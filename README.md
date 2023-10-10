@@ -21,5 +21,3 @@
 <strong>Myth.os</strong> is a history simulator that generates civlizations and makes them interact, ahem... that is... kill themselves and enslave themselves and... well... history!
 
 That's pretty much of it. I just wanted to do that.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
