@@ -86,6 +86,38 @@ const terrainCharacters = {
     'm': '^',
     's': '-',
 };
+
+// Define characters to represent terrain "walkabilty"
+// '-' = walkable
+// '.' = barely walkable
+// ' ' = unwalkable
+const terrainCharactersWalkability = {
+    'w': ' ',
+    'b': '.',
+    'g': '-',
+    'f': '-',
+    'm': '.',
+    's': ' ',
+};
+
+// This one is obvious.
+const terrainCharactersSailability = {
+	'w': '-',
+    'b': ' ',
+    'g': ' ',
+    'f': ' ',
+    'm': ' ',
+    's': ' ',
+}
+
+const terrainEmojis = {
+	'w': '🌊',
+    'b': '🏝️',
+    'g': '🌾',
+    'f': '🌲',
+    'm': '⛰️',
+    's': '❄️',
+}
   
 // Display the world map in the command prompt
 const displayWorldMap = () => {
@@ -100,13 +132,52 @@ const displayWorldMap = () => {
     }
 }
 
+const displayTerrain = () => {
+    for (let y = 0; y < height; y++) {
+        let row = '';
+        for (let x = 0; x < width; x++) {
+            const terrainType = worldArray[x][y];
+            const character = terrainCharactersWalkability[terrainType];
+            row += character;
+        }
+        console.log(row);
+    }
+}
+
+const displaySea = () => {
+    for (let y = 0; y < height; y++) {
+        let row = '';
+        for (let x = 0; x < width; x++) {
+            const terrainType = worldArray[x][y];
+            const character = terrainCharactersSailability[terrainType];
+            row += character;
+        }
+        console.log(row);
+    }
+}
+
+const displayEmojiMap = () => {
+    for (let y = 0; y < height; y++) {
+        let row = '';
+        for (let x = 0; x < width; x++) {
+            const terrainType = worldArray[x][y];
+            const character = terrainEmojis[terrainType];
+            row += character;
+        }
+        console.log(row);
+    }
+}
+
 // Saves the entire world map array into a JSON file as a seed
 saveWorld(worldArray)
 
 // worldGen package
 const worldGen = {
     worldArray: worldArray,
-    displayMap: displayWorldMap
+    displayMap: displayWorldMap,
+	displayTerrain: displayTerrain,
+	displaySea: displaySea,
+	displayEmojiMap: displayEmojiMap,
 }
 
 module.exports = worldGen
