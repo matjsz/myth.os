@@ -1,5 +1,8 @@
 {
   "dependencies": {
-    "noisejs": "^2.1.0"
+    "canvas": "^2.11.2",
+    "chalk": "^4.0.0",
+    "noisejs": "^2.1.0",
+    "uuid": "^9.0.1"
   }
 }

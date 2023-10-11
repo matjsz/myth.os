@@ -1,5 +1,6 @@
-// Import the noise library
+// Import libraries
 const Noise = require('noisejs').Noise;
+const chalk = require('chalk');
 const saveWorld = require('./saveWorld.js')
 
 // Initialize the noise generator
@@ -118,6 +119,16 @@ const terrainEmojis = {
     'm': '⛰️',
     's': '❄️',
 }
+
+const coloredCharacters = {
+    'w': chalk.bgBlue.blue('~'),
+    'b': chalk.bgYellow.yellow('.'),
+    'g': chalk.bgGreenBright.greenBright(','),
+    'f': chalk.bgGreen.green('"'),
+    'm': chalk.bgRed.red('^'),
+    's': chalk.bgWhite.white('*'),
+    'civ': chalk.bgMagentaBright.magentaBright('C'),
+}
   
 // Display the world map in the command prompt
 const displayWorldMap = () => {
@@ -168,6 +179,51 @@ const displayEmojiMap = () => {
     }
 }
 
+const displayColoredMap = () => {
+    for (let y = 0; y < height; y++) {
+        let row = '';
+        for (let x = 0; x < width; x++) {
+            const terrainType = worldArray[x][y];
+            const character = coloredCharacters[terrainType];
+            row += character;
+        }
+        console.log(row);
+    }
+}
+
+const displayCivlizationsMap = (civs) => {
+    function getCivsCoords(civsArr){
+        let civsCoords = []
+
+        for(let civ in civsArr){
+            civsCoords.push([civsArr[civ].x, civsArr[civ].y])
+        }
+
+        return civsCoords
+    }
+
+    const containsCoord = (array, subArray) => array.some((item) => item.every((val, index) => val === subArray[index]));
+
+    const civsCoords = getCivsCoords(civs)
+
+    for (let y = 0; y < height; y++) {
+        let row = '';
+        for (let x = 0; x < width; x++) {
+            let thisCoord = [x, y]
+            if(containsCoord(civsCoords, thisCoord)){
+                const terrainType = 'civ'
+                const character = coloredCharacters[terrainType];
+                row += character;
+            } else {
+                const terrainType = worldArray[x][y];
+                const character = coloredCharacters[terrainType];
+                row += character;
+            }
+        }
+        console.log(row);
+    }
+}
+
 // Saves the entire world map array into a JSON file as a seed
 saveWorld(worldArray)
 
@@ -178,6 +234,8 @@ const worldGen = {
 	displayTerrain: displayTerrain,
 	displaySea: displaySea,
 	displayEmojiMap: displayEmojiMap,
+    displayColoredMap: displayColoredMap,
+    displayCivlizationsMap, displayCivlizationsMap
 }
 
 module.exports = worldGen
