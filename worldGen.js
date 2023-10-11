@@ -3,7 +3,7 @@ const Noise = require('noisejs').Noise;
 const saveWorld = require('./saveWorld.js')
 
 // Initialize the noise generator
-const noise = new Noise(Math.random());
+const noise = new Noise(Math.random())
 
 // Constants for grid size and parameters
 const width = 100;  // Width of the world
