@@ -33,7 +33,7 @@ const terrainTypes = [
 	{ threshold: 0.4, type: "g" },
 	{ threshold: 0.6, type: "f" },
 	{ threshold: 0.8, type: "m" },
-	{ threshold: 1.0, type: "u" },
+	{ threshold: 1.0, type: "s" },
 ];
   
   	// Create an array representing terrain types based on the heightmap
@@ -42,7 +42,7 @@ const terrainTypes = [
 		worldArray[x] = new Array(height);
 		for (let y = 0; y < height; y++) {
 			const heightValue = worldMap[x][y];
-			let terrainType = "u";
+			let terrainType = "s";
 
 			for (const terrain of terrainTypes) {
 				if (heightValue <= terrain.threshold) {
@@ -84,7 +84,7 @@ const terrainCharacters = {
     'g': ',',
     'f': '"',
     'm': '^',
-    'u': ' ',
+    's': '-',
 };
   
 // Display the world map in the command prompt
