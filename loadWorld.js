@@ -1,10 +1,10 @@
 const fs = require('fs');
 
-fs.readFile('worldSeed.json', (err, data) => {
-    if (err) {
-        console.error('Error reading the seed:', err);
-    } else {
-        const worldArray = JSON.parse(data);
-        console.log('World array recreated from seed.');
-    }
-});
+const loadWorld = () => {
+    const worldData = fs.readFileSync('worldSeed.json')
+    const worldArray = JSON.parse(worldData)
+    console.log('World array recreated from seed.')
+    return worldArray
+}
+
+module.exports = loadWorld

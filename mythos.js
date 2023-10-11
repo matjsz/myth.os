@@ -4,7 +4,9 @@
 // - Settler tribe
 
 const worldGen = require("./worldGen")
+const tongueTome = require("./tongueTome")
 const { v4: uuidv4 } = require('uuid');
+const saveCivs = require("./saveCivs");
 
 // Nations
 // - Kingdom
@@ -30,16 +32,21 @@ const { v4: uuidv4 } = require('uuid');
 // - Indexed into a kingdom or an empire and still be the same tribe
 // - Indexed into a kingdom or an empire and be destroyed by the conquerors
 
-// World Info
+// World Info and Global Vars
 const width = 100;  // Width of the world
 const height = 100; // Height of the world
 const chanceToSpawnCiv = 0.6
+const civTiers = {
+    0: 'Tribe',
+    1: 'Kingdom',
+    2: 'Empire'
+}
 
 // Civilizations info (temporary)
 const civs = {}
 
 // Generate world
-const worldData = worldGen.worldArray
+const worldData = worldGen.generateWorld()
 
 const plantCivs = () => {
     const civCribs = ['b', 'g', 'f']
@@ -50,48 +57,24 @@ const plantCivs = () => {
             const terrainType = worldData[x][y];
             if(civCribs.includes(terrainType)){
                 if(Math.random()*100 <= chanceToSpawnCiv){
-                    civs[uuidv4()] = {
-                        'name': 'Civ',
+                    let civName = tongueTome.getWord(Math.floor(Math.random()*3+2))
+
+                    civs[civName] = {
+                        'name': civName[0].toUpperCase()+civName.slice(1),
+                        'id': civName,
+                        'uid': uuidv4(),
+                        'tier': 0,
                         'x': x,
                         'y': y,
                     }
                 }
             }
         }
-        
     }
-}
 
-
-// Generate cultures
-const createCultures = () => {
-    // for(let i=0; i<regions.length; i++){
-    //     for(let j=0; j<3; j++){
-    //         console.log(i)
-    //         let region = regions[0][i][j]
-    //         let continent = regionsData[i].name
-    //         let culturesForThisRegion = Math.floor(Math.random()*4)+1
-            
-    //         for(let k=0; k<=culturesForThisRegion; k++){
-    //             let thisCulture = {
-    //                 name: "Culture",
-    //                 regionOfStart: region,
-    //                 continentOfStart: continent,
-    //                 language: "Culture's Language",
-    //                 religion: {
-    //                     name: "Culture's Religion",
-    //                     type: "Type"
-    //                 },
-    //                 core: "Core"
-    //             }
-    //             let thisCultureID = thisCulture.name.toLowerCase()+" "+k
-
-    //             cultures[thisCultureID] = thisCulture
-    //         }
-    //     }
-    // }
+    saveCivs(civs)
 }
 
 plantCivs()
 console.log(civs)
-worldGen.displayCivlizationsMap(civs)
+worldGen.displayCivlizationsMap(civs, worldData)
