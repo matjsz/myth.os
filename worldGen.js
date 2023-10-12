@@ -254,7 +254,7 @@ const displayCivlizationsMap = (civs, worldArray) => {
 
     for(civId in civs){
         let civColor = civs[civId].color
-        console.log(`${chalk.bgRgb(civColor[0], civColor[1], civColor[2]).white(civs[civId].name[0])} - ${civs[civId].name}${chalk.bgRgb(civColor[0], civColor[1], civColor[2]).white(civs[civId].name[0])} - ${civs[civId].name}`)
+        console.log(`${chalk.bgRgb(civColor[0], civColor[1], civColor[2]).white(civs[civId].name[0])}${chalk.bgRgb(civColor[0], civColor[1], civColor[2]).white(civs[civId].name[0])} - ${civs[civId].name}`)
     }
 }
 
