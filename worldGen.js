@@ -128,12 +128,12 @@ const terrainEmojis = {
 }
 
 const coloredCharacters = {
-    'w': chalk.bgBlue.blue('~'),
-    'b': chalk.bgYellow.yellow('.'),
-    'g': chalk.bgGreenBright.greenBright(','),
-    'f': chalk.bgGreen.green('"'),
-    'm': chalk.bgRed.red('^'),
-    's': chalk.bgWhite.white('*')
+    'w': chalk.bgBlue.blue('~~'),
+    'b': chalk.bgYellow.yellow('..'),
+    'g': chalk.bgGreenBright.greenBright(',,'),
+    'f': chalk.bgGreen.green('""'),
+    'm': chalk.bgRed.red('^^'),
+    's': chalk.bgWhite.white(',,')
 }
   
 // Display the world map in the command prompt
@@ -198,30 +198,47 @@ const displayColoredMap = (worldArray) => {
 }
 
 const displayCivlizationsMap = (civs, worldArray) => {
-    function getCivsData(civsArr){
-        let civsCoords = []
-        let civsData = []
-
-        for(let civ in civsArr){
-            civsCoords.push([civsArr[civ].x, civsArr[civ].y])
-            civsData.push(civsArr[civ])
+    function coordsAreEqual(array1, array2) {
+        for (let i = 0; i < array1.length; i++) {
+            if (array1[i] !== array2[i]) {
+                return false
+            }
         }
+        return true
+      }
 
-        return [civsCoords, civsData]
+    const containsCoord = (array, subArray) => array.some((item) => item.every((val, index) => val === subArray[index]))
+    let coordsByCivId = {}
+    let allTheCoords = []
+    let capitalsByCivId = {}
+
+    for (let civsId in civs){
+        coordsByCivId[civsId] = civs[civsId].territory
+        capitalsByCivId[civsId] = civs[civsId].capital
+        for(let civCellId in civs[civsId].territory){
+            allTheCoords.push(civs[civsId].territory[civCellId])
+        }
     }
-
-    const containsCoord = (array, subArray) => array.some((item) => item.every((val, index) => val === subArray[index]));
-
-    const civsData = getCivsData(civs)
 
     for (let y = 0; y < height; y++) {
         let row = '';
         for (let x = 0; x < width; x++) {
-            let thisCoord = [x, y]
-            if(containsCoord(civsData[0], thisCoord)){
-                for(let i=0; i<civsData[1].length; i++){
-                    if(civsData[1][i].x == thisCoord[0] && civsData[1][i].y == thisCoord[1]){
-                        row += chalk.bgMagenta.magenta(civsData[1][i].name[0])
+            var thisCoord = [x, y]
+            if(containsCoord(allTheCoords, thisCoord)){
+                for(civId in coordsByCivId){
+                    let civColor = civs[civId].color
+                    if(coordsByCivId[civId].length == 1){
+                        if(coordsAreEqual(coordsByCivId[civId][0], thisCoord)){
+                            row +=  `${chalk.bgRgb(civColor[0], civColor[1], civColor[2]).white(civs[civId].name[0])}${chalk.bgRgb(civColor[0], civColor[1], civColor[2]).white(civs[civId].name[0])}`
+                        } 
+                    } else{
+                        if(containsCoord(coordsByCivId[civId], thisCoord)){
+                            if(coordsAreEqual(capitalsByCivId[civId], thisCoord)){
+                                row += chalk.bgRgb(civColor[0], civColor[1], civColor[2]).bold("**")
+                            } else {
+                                row += `${chalk.bgRgb(civColor[0], civColor[1], civColor[2]).white(civs[civId].name[0])}${chalk.bgRgb(civColor[0], civColor[1], civColor[2]).white(civs[civId].name[0])}`
+                            }
+                        }
                     }
                 }
             } else {
@@ -231,6 +248,13 @@ const displayCivlizationsMap = (civs, worldArray) => {
             }
         }
         console.log(row);
+    }
+
+    console.log("\nCivilizations:\n")
+
+    for(civId in civs){
+        let civColor = civs[civId].color
+        console.log(`${chalk.bgRgb(civColor[0], civColor[1], civColor[2]).white(civs[civId].name[0])} - ${civs[civId].name}${chalk.bgRgb(civColor[0], civColor[1], civColor[2]).white(civs[civId].name[0])} - ${civs[civId].name}`)
     }
 }
 

@@ -7,6 +7,8 @@ const worldGen = require("./worldGen")
 const tongueTome = require("./tongueTome")
 const { v4: uuidv4 } = require('uuid');
 const saveCivs = require("./saveCivs");
+const loadCivs = require("./loadCivs");
+const loadWorld = require("./loadWorld");
 
 // Nations
 // - Kingdom
@@ -48,7 +50,19 @@ const civs = {}
 // Generate world
 const worldData = worldGen.generateWorld()
 
+// Generate civilizations (STEP 1)
 const plantCivs = () => {
+    function getRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min
+    }
+      
+    function generateRandomRGB() {
+        const red = getRandomNumber(0, 255)
+        const green = getRandomNumber(0, 255)
+        const blue = getRandomNumber(0, 255)
+        return [red, green, blue]
+    }
+
     const civCribs = ['b', 'g', 'f']
 
     for (let y = 0; y < height; y++) {
@@ -61,11 +75,12 @@ const plantCivs = () => {
 
                     civs[civName] = {
                         'name': civName[0].toUpperCase()+civName.slice(1),
+                        'color': generateRandomRGB(),
                         'id': civName,
                         'uid': uuidv4(),
                         'tier': 0,
-                        'x': x,
-                        'y': y,
+                        'capital': [x, y],
+                        'territory': [[x, y]],
                     }
                 }
             }
@@ -75,6 +90,123 @@ const plantCivs = () => {
     saveCivs(civs)
 }
 
+// Grow territory
+const growCivs = (turns) => {
+    const civsData = civs
+    const worldSeedData = loadWorld()
+    var civsCoords = []
+
+
+    const containsCoord = (array, subArray) => array.some((item) => item.every((val, index) => val === subArray[index]))
+
+    function worldTargetCoordExpandable(coord, currentTerritory){
+        try{
+            const terrainGroundAllowed = ['b', 'g', 'f']
+
+            var x = coord[0]
+            var y = coord[1]
+    
+            if(coord[0] < 0){
+                return false
+            }
+            if(coord[1] < 0){
+                return false
+            }
+
+            if(coord[0] > 0){
+                x = coord[0]
+            }
+    
+            if(coord[1] > 0){
+                y = coord[1]
+            }
+
+            if(x >= 100){
+                return false
+            }
+
+            if(y >= 100){
+                return false
+            }
+    
+            const terrainType = worldSeedData[x][y];
+            if(terrainGroundAllowed.includes(terrainType)){
+                if(!containsCoord(currentTerritory, coord)){
+                    if(!containsCoord(civsCoords, coord)){
+                        civsCoords.push(coord)
+                        return true
+                    }
+                } else{
+                    return false
+                }
+            } else{
+                return false
+            }
+        } catch(e){
+            console.log(x, y)
+            console.log(e)
+            return null
+        }
+    }
+
+    function growCiv(civId){
+        let civTerritoryBeforeGrowth = civsData[civId].territory // Civ cells
+        let newTerritoryToGrow = []
+        
+        for(civCellId in civTerritoryBeforeGrowth){
+            
+            let civCell = civTerritoryBeforeGrowth[civCellId]
+            // Check X
+            for(let i=0; i<2; i++){
+                
+                if(i%2!=0){
+                    let targetCoord = civCell[0]-1
+                    
+                    if(worldTargetCoordExpandable([targetCoord, civCell[1]], civTerritoryBeforeGrowth)){
+                        civsData[civId].territory.push([targetCoord, civCell[1]])
+                    }
+                } else {
+                    let targetCoord = civCell[0]+1
+                    
+                    if(worldTargetCoordExpandable([targetCoord, civCell[1]], civTerritoryBeforeGrowth)){
+                        civsData[civId].territory.push([targetCoord, civCell[1]])
+                    }
+                }  
+            }
+
+            // Check Y
+            for(let i=0; i<2; i++){
+                if(i%2!=0){
+                    let targetCoord = civCell[1]-1
+                    
+                    if(worldTargetCoordExpandable([civCell[0], targetCoord], civTerritoryBeforeGrowth)){
+                        civsData[civId].territory.push([civCell[0], targetCoord])
+                    }
+                } else {
+                    let targetCoord = civCell[1]+1
+                    
+                    if(worldTargetCoordExpandable([civCell[0], targetCoord], civTerritoryBeforeGrowth)){
+                        civsData[civId].territory.push([civCell[0], targetCoord])
+                    }
+                }
+            }
+        }
+    }
+
+    console.log('Starting territory expasion for all civs.\n')
+    for(let i=0; i<turns; i++){
+        for(let civId in civsData){
+            growCiv(civId)
+        }
+        console.log('Turn '+i+' finished.\n')
+    }
+
+    saveCivs(civsData)
+
+    worldGen.displayCivlizationsMap(civsData, worldData)
+}
+
 plantCivs()
 console.log(civs)
 worldGen.displayCivlizationsMap(civs, worldData)
+growCivs(50)
