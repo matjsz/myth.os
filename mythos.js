@@ -72,15 +72,78 @@ const plantCivs = () => {
             if(civCribs.includes(terrainType)){
                 if(Math.random()*100 <= chanceToSpawnCiv){
                     let civName = tongueTome.getWord(Math.floor(Math.random()*3+2))
+                    let civNameUpper = civName[0].toUpperCase()+civName.slice(1)
 
                     civs[civName] = {
-                        'name': civName[0].toUpperCase()+civName.slice(1),
+                        'name': civNameUpper,
                         'color': generateRandomRGB(),
                         'id': civName,
                         'uid': uuidv4(),
                         'tier': 0,
                         'capital': [x, y],
                         'territory': [[x, y]],
+                        'culture': {
+                            'language': {
+                                'name': civNameUpper+'nese',
+                                'origin': civName,
+                                'family': civNameUpper+'nese',
+                                'writingSystem': {
+                                    'has': false,
+                                    'uses': '',
+                                }
+                            },
+                            'religion': {
+                                'name': '',
+                                'deities': ['Deity1', 'Deity2'],
+                                'religiousTexts': ['Holy Book1', 'Holy Book2'],
+                                'practices': ['Ritual1', 'Ritual2'],
+                            },
+                            'government': {
+                                'type': 'tribal',
+                                'rulers': 'Tribal Chief Name',
+                                'successionRules': ['duel', 'bloodline', 'religious', 'voting'],
+                                'laws': [],
+                            },
+                            'economy': {
+                                'has': false,
+                                'mainTrades': [],
+                                'currency': '',
+                                'tradePartners': [],
+                            },
+                            'technologyTier': {
+                                'forging': 0,
+                                'chemistry': 0,
+                                'writing': 0,
+                            },
+                            'artAndCulture': {
+                                'artForms': [],
+                                'culturalSymbols': [],
+                                'clothing': '',
+                                'festivals': [],
+                                'folkloreAndMyths': [],
+                            },
+                            'militaryAndDefense': {
+                                'famousFor': 'Can be archery, cavalry, etc',
+                                'weaponsAndArmor': [],
+                                'militaryCampaigns': [],
+                            },
+                            'relationsWithOtherCivs': {
+                                'alliances': [],
+                                'warsAndConflicts': [],
+                                'tradeAgreements': [],
+                            },
+                            'historicalEvents': {
+                                'events': [],
+                                'leadersAndFigures': [],
+                                'achievements': [],
+                                'catastrophesAndCrises': [],
+                            },
+                            'socialStructure': {
+                                'slaveryOrServitude': true,
+                                'sameSexRelationships': false,
+                                'socialClasses': [],
+                            },
+                        }
                     }
                 }
             }
@@ -151,45 +214,52 @@ const growCivs = (turns) => {
 
     function growCiv(civId){
         let civTerritoryBeforeGrowth = civsData[civId].territory // Civ cells
-        let newTerritoryToGrow = []
         
-        for(civCellId in civTerritoryBeforeGrowth){
-            
-            let civCell = civTerritoryBeforeGrowth[civCellId]
-            // Check X
-            for(let i=0; i<2; i++){
-                
-                if(i%2!=0){
-                    let targetCoord = civCell[0]-1
-                    
-                    if(worldTargetCoordExpandable([targetCoord, civCell[1]], civTerritoryBeforeGrowth)){
-                        civsData[civId].territory.push([targetCoord, civCell[1]])
-                    }
-                } else {
-                    let targetCoord = civCell[0]+1
-                    
-                    if(worldTargetCoordExpandable([targetCoord, civCell[1]], civTerritoryBeforeGrowth)){
-                        civsData[civId].territory.push([targetCoord, civCell[1]])
-                    }
-                }  
-            }
+        const civsExpansionLimitsByTier = {
+            0: 21,
+            1: 77,
+            2: 173
+        }
 
-            // Check Y
-            for(let i=0; i<2; i++){
-                if(i%2!=0){
-                    let targetCoord = civCell[1]-1
+        if(civTerritoryBeforeGrowth.length < civsExpansionLimitsByTier[civsData[civId].tier]){
+            for(civCellId in civTerritoryBeforeGrowth){
+            
+                let civCell = civTerritoryBeforeGrowth[civCellId]
+                // Check X
+                for(let i=0; i<2; i++){
                     
-                    if(worldTargetCoordExpandable([civCell[0], targetCoord], civTerritoryBeforeGrowth)){
-                        civsData[civId].territory.push([civCell[0], targetCoord])
-                    }
-                } else {
-                    let targetCoord = civCell[1]+1
-                    
-                    if(worldTargetCoordExpandable([civCell[0], targetCoord], civTerritoryBeforeGrowth)){
-                        civsData[civId].territory.push([civCell[0], targetCoord])
+                    if(i%2!=0){
+                        let targetCoord = civCell[0]-1
+                        
+                        if(worldTargetCoordExpandable([targetCoord, civCell[1]], civTerritoryBeforeGrowth)){
+                            civsData[civId].territory.push([targetCoord, civCell[1]])
+                        }
+                    } else {
+                        let targetCoord = civCell[0]+1
+                        
+                        if(worldTargetCoordExpandable([targetCoord, civCell[1]], civTerritoryBeforeGrowth)){
+                            civsData[civId].territory.push([targetCoord, civCell[1]])
+                        }
+                    }  
+                }
+    
+                // Check Y
+                for(let i=0; i<2; i++){
+                    if(i%2!=0){
+                        let targetCoord = civCell[1]-1
+                        
+                        if(worldTargetCoordExpandable([civCell[0], targetCoord], civTerritoryBeforeGrowth)){
+                            civsData[civId].territory.push([civCell[0], targetCoord])
+                        }
+                    } else {
+                        let targetCoord = civCell[1]+1
+                        
+                        if(worldTargetCoordExpandable([civCell[0], targetCoord], civTerritoryBeforeGrowth)){
+                            civsData[civId].territory.push([civCell[0], targetCoord])
+                        }
                     }
                 }
-            }
+            }   
         }
     }
 
@@ -198,7 +268,6 @@ const growCivs = (turns) => {
         for(let civId in civsData){
             growCiv(civId)
         }
-        console.log('Turn '+i+' finished.\n')
     }
 
     saveCivs(civsData)
@@ -206,7 +275,8 @@ const growCivs = (turns) => {
     worldGen.displayCivlizationsMap(civsData, worldData)
 }
 
-plantCivs()
-console.log(civs)
-worldGen.displayCivlizationsMap(civs, worldData)
-growCivs(50)
+// plantCivs()
+const civsUpdt = loadCivs()
+console.log(civsUpdt['owa'].culture)
+// worldGen.displayCivlizationsMap(civs, worldData)
+// growCivs(50)
