@@ -50,6 +50,98 @@ const civs = {}
 // Generate world
 const worldData = worldGen.generateWorld()
 
+// UTILS
+const newReligion = () => {
+    // 'religion': {
+    //     'name': '',
+    //     'deities': ['Deity1', 'Deity2'],
+    //     'religiousTexts': ['Holy Book1', 'Holy Book2'],
+    //     'practices': ['Ritual1', 'Ritual2'],
+    // }
+
+    function genTheistReligion(religionType){
+        function genMonotheist(){
+            function getSacredTextName(religionName){
+                let titleType = ['teaching', 'sacred'][Math.floor(Math.random()*2)]
+
+                if(titleType == 'teaching'){
+                    let titleStart = ['The Way Of ', 'The '][Math.floor(Math.random()*2)]
+
+                    return titleStart+`${religionName}`
+                } else{
+                    let textName = tongueTome.getWord()
+
+                    return textName[0].toLocaleUpperCase()+textName.slice(1)
+                }
+            }
+
+            let godName = tongueTome.getName(2)
+            let religionName = godName+['ianism', 'anism', 'nism', 'ism'][Math.floor(Math.random()*4)]
+            let religiousTexts = []
+            let religiousTextQuantity = ['various', 'one'][Math.floor(Math.random()*2)]
+            if(religiousTextQuantity == 'various'){
+                let howMany = Math.floor(Math.random()*2)+1
+
+                for(let i=0; i<howMany; i++){
+                    let textName = tongueTome.getWord()
+
+                    let thisReligiousText = {
+                        'title': textName[0].toLocaleUpperCase()+textName.slice(1),
+                        'myth': 'WIP',
+                        'writtenBy': `${tongueTome.getName(2)} ${tongueTome.getName()}` 
+                    }
+
+                    religiousTexts.push(thisReligiousText)
+                }
+            } else{
+                let thisReligiousText = {
+                    'title': getSacredTextName(religionName),
+                    'myth': 'WIP',
+                    'writtenBy': `${tongueTome.getName(2)} ${tongueTome.getName()}` 
+                }
+
+                religiousTexts.push(thisReligiousText)
+            }
+            let rituals = []
+            let ritualsAmmount = Math.floor(Math.random()*5)+1
+            for(let i=0; i<ritualsAmmount; i++){
+                let ritualName = tongueTome.getWord()
+
+                let thisRitual = {
+                    'name': ritualName[0].toLocaleUpperCase()+ritualName.slice(1),
+                    'description': 'WIP'
+                }
+
+                rituals.push(thisRitual)
+            }
+
+            return {
+                'name': religionName,
+                'deities': [godName],
+                'religiousTexts': [religiousTexts],
+                'practices': rituals
+            }
+        }
+
+        const getReligionDataByType = {
+            'monotheist': genMonotheist
+        }
+
+        return getReligionDataByType[religionType]()
+    }
+    
+    function genNonTheistReligion(religionType){}
+
+    let religionType = ['monotheist', 'polytheist', 'henotheist', 'pantheism', 'panentheist', 'animistic', 'dualistic', 'monistic', 'non-theist'][Math.floor(Math.random()*9)]
+
+    if(religionType == 'non-theist'){
+        genNonTheistReligion(religionType)
+    } else{
+        genTheistReligion(religionType)
+    }
+    
+}
+
 // Generate civilizations (STEP 1)
 const plantCivs = () => {
     function getRandomNumber(min, max) {
@@ -92,12 +184,7 @@ const plantCivs = () => {
                                     'uses': '',
                                 }
                             },
-                            'religion': {
-                                'name': '',
-                                'deities': ['Deity1', 'Deity2'],
-                                'religiousTexts': ['Holy Book1', 'Holy Book2'],
-                                'practices': ['Ritual1', 'Ritual2'],
-                            },
+                            'religion': newReligion(),
                             'government': {
                                 'type': 'tribal',
                                 'rulers': 'Tribal Chief Name',
