@@ -1,7 +1,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/othneildrew/Best-README-Template">
-    <!-- <img src="" alt="Logo" width="80" height="80"> -->
+    <img src="https://github.com/matjsz/myth.os/assets/54675543/a044a9e9-7e2d-45a5-9a0e-915d2dcbafda" alt="Logo" width="400" height="400">
   </a>
 
   <h3 align="center">Myth.os</h3>
