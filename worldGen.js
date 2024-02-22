@@ -7,10 +7,10 @@ const saveWorld = require('./saveWorld.js')
 const noise = new Noise(Math.random())
 
 // Constants for grid size and parameters
-const width = 100;  // Width of the world
-const height = 100; // Height of the world
-const scale = 0.02; // Adjust the scale to control terrain roughness
-const octaves = 6; // Number of octaves for Perlin noise
+const width = 250;  // Width of the world
+const height = 250; // Height of the world
+const scale = 0.005; // Adjust the scale to control terrain roughness
+const octaves = 12; // Number of octaves for Perlin noise
 const persistence = 0.5; // Persistence for Perlin noise
 
 const generateWorld = () => {

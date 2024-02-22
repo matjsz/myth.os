@@ -35,8 +35,8 @@ const loadWorld = require("./loadWorld");
 // - Indexed into a kingdom or an empire and be destroyed by the conquerors
 
 // World Info and Global Vars
-const width = 100;  // Width of the world
-const height = 100; // Height of the world
+const width = 250;  // Width of the world
+const height = 250; // Height of the world
 const chanceToSpawnCiv = 0.6
 const civTiers = {
     0: 'Tribe',
@@ -364,6 +364,6 @@ const growCivs = (turns) => {
 
 // plantCivs()
 const civsUpdt = loadCivs()
-console.log(civsUpdt['owa'].culture)
+console.log(civsUpdt)
 // worldGen.displayCivlizationsMap(civs, worldData)
 // growCivs(50)

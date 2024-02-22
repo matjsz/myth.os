@@ -31,6 +31,7 @@ function generateSentence(wordCount=Math.floor, minWordLength, maxWordLength) {
 // Arrays of consonants, vowels, digraphs, and diphthongs
 const digraphs = ["th", "ch", "sh", "ph", "qu", "br", "cr", "dr", "fr", "gr", "pr", "tr"];
 const diphthongs = ["ai", "ei", "oi", "au", "ou", "ie", "ea", "ue", "oo", "ui"];
+const diphthongsAlternative = ["a", "e", "i", "o", "u", "y", "ye", "yo", "ya", "yi", "ey", "ay", "oy", "uy"]
 
 // Function to generate a random procedural name
 function generateProceduralName(nameLength=Math.floor(Math.random() * 3) + 2) {
@@ -47,7 +48,7 @@ function generateProceduralName(nameLength=Math.floor(Math.random() * 3) + 2) {
       } else {
         syllable += getRandomElement(vowels);
         if (Math.random() < 0.4) {
-          syllable += getRandomElement(digraphs);
+          syllable += getRandomElement(digraphs+diphthongsAlternative[Math.floor(Math.random()*diphthongsAlternative.length)]);
         }
         if (Math.random() < 0.2) {
           syllable += getRandomElement(consonants);
@@ -75,8 +76,8 @@ function getRandomElement(arr) {
 }
 
 // Example usage
-// const proceduralName = generateProceduralName(2);
-// console.log(proceduralName);
+const proceduralName = generateProceduralName(2);
+console.log(proceduralName);
 
 const tongueTome = {
   getWord: generateWord,
